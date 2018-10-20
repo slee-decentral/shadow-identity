@@ -1,3 +1,4 @@
+"use strict";
 
 function privateKeyToBinaryString(privateKey) {
     var binString = new String();
@@ -34,4 +35,30 @@ console.log("new public key: ", new_pub_key);
 const privateKeyString = privateKeyToBinaryString(dk.privateKey);
 console.log("original private key in string form length", privateKeyString.length)
 console.log(privateKeyString)
+
+var Web3 = require("web3");
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var account;
+web3.eth.getCoinbase()
+.then(function (coinbase) {
+    account = coinbase;
+    console.log("account: ", account);
+})
+.then(function() {
+    return web3.eth.sendTransaction({
+        from: account, to: account, value: web3.utils.toWei('1', "ether")})
+})
+.then(function (receipt) {
+    console.log("transaction receipt: ", receipt);
+})
+.then(function() {
+    return web3.eth.getBalance(account);
+})
+.then(function (balance) {
+    console.log("balance :", balance);
+    console.log("balance in ether: ", web3.utils.fromWei(balance, "ether"));
+})
+.catch(function (reason) {
+    console.log("failed: ", reason);
+});
 
